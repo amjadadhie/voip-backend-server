@@ -3,3 +3,6 @@
 
 # Ignore dependencies folder
 node_modules/
+
+testfile.http
+testlogin.http

@@ -1,29 +1,24 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 
-// Dummy username dan password
-const users = [ // Dummy user database
-    { id: 1, email: 'user@example.com', password: bcrypt.hashSync('password123', 10) }
-];
+// Membaca file data pengguna
+const users = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/users.json')));
 
-exports.loginUser = (req, res) => {
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
-    // Cek apakah user ada di database
+    // Cari pengguna berdasarkan email
     const user = users.find(u => u.email === email);
-    if (!user) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+
+    if (!user || user.password !== password) {
+        return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Cek password
-    const isMatch = bcrypt.compareSync(password, user.password);
-    if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-    }
+    // Membuat JWT token jika kredensial valid
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
-    // Buat token JWT
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.json({ token });
+    res.json({ token }); // Mengirimkan token ke client
 };
 
+module.exports = { loginUser };
