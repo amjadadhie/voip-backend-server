@@ -1,11 +1,14 @@
 const express = require('express');
-const { loginUser } = require('../controllers/authController');
+const { loginUser, registerUser } = require('../controllers/authController');
 const { listRecordings } = require('../utils/s3Utils');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 // Route untuk login
 router.post('/login', loginUser);
+
+// Route untuk registrasi
+router.post('/register', registerUser);
 
 // Middleware untuk memverifikasi token JWT
 const verifyToken = (req, res, next) => {

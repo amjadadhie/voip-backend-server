@@ -10,7 +10,7 @@ router.get('/list', verifyToken, async (req, res) => {
         const files = await listRecordings(); // Mendapatkan daftar rekaman dari S3
         res.json(files); // Mengembalikan daftar file ke client
     } catch (error) {
-        console.error(error); // Untuk debugging
+        console.error("Error fetching recordings: ", error); // Untuk debugging
         res.status(500).json({ message: "Error fetching recordings" }); // Pesan error
     }
 });

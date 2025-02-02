@@ -14,10 +14,12 @@ exports.listRecordings = async () => {
     try {
         const params = {
             Bucket: BUCKET_NAME,
-            Prefix: "recordings/"  // Folder tempat menyimpan rekaman
+            Prefix: "recordings/"
         };
 
         const data = await s3.listObjectsV2(params).promise();
+        console.log("Data from S3:", data);  // Log data dari S3 untuk debugging
+
         const files = data.Contents.map(file => ({
             name: file.Key,
             lastModified: file.LastModified,
@@ -31,6 +33,7 @@ exports.listRecordings = async () => {
         throw error;
     }
 };
+
 
 // Fungsi untuk mendapatkan Signed URL agar user bisa streaming tanpa download
 exports.getSignedUrl = (fileName) => {
