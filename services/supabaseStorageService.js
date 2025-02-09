@@ -27,9 +27,14 @@ const getSignedUrl = async (fileName) => {
     return data.signedUrl;
 };
 
-// Mengupload file ke Supabase Storage
-const uploadRecording = async (filePath, fileName) => {
-    const { data, error } = await supabase.storage.from('amjad-raka-skripsi-voip').upload(fileName, filePath);
+// Fungsi untuk mengupload file ke Supabase Storage
+const uploadRecording = async (fileBuffer, fileName, mimeType) => {
+    const { data, error } = await supabase.storage
+        .from('amjad-raka-skripsi-voip') // Nama bucket
+        .upload(`recordings/${fileName}.mp3`, fileBuffer, {
+            contentType: 'audio/mpeg', // Paksa MIME type menjadi MP3
+            upsert: true
+        });
 
     if (error) {
         console.error('Error uploading file:', error.message);

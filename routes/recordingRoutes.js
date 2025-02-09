@@ -3,7 +3,10 @@ const { listRecordings, getSignedUrl, uploadRecording } = require('../services/s
 const multer = require('multer'); // Untuk menangani file upload
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' }); // Lokasi penyimpanan sementara
+// const upload = multer({ dest: 'uploads/' }); // Lokasi penyimpanan sementara
+// Konfigurasi Multer untuk membaca file sebagai buffer
+const storage = multer.memoryStorage(); // Gunakan memoryStorage agar dapat mengakses buffer langsung
+const upload = multer({ storage: storage });
 
 // Endpoint untuk mendapatkan daftar rekaman
 router.get('/list', async (req, res) => {
@@ -29,18 +32,29 @@ router.get('/stream/:fileName', async (req, res) => {
 });
 
 // Endpoint untuk upload file ke Supabase Storage
-router.post('/upload', upload.single('recording'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
     try {
-        const filePath = req.file.path; // Path file sementara
-        const fileName = req.file.originalname; // Nama asli file
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const fileBuffer = req.file.buffer; // Ambil buffer file dari Multer
+
+        const path = require('path'); // Import path module
+
+        const fileExtension = path.extname(req.file.originalname); // Dapatkan ekstensi (misalnya: .mp3)
+        const fileBaseName = path.basename(req.file.originalname, fileExtension); // Nama file tanpa ekstensi
+        const fileName = `${Date.now()}-${fileBaseName.replace(/\s+/g, '_')}`;
+
+        const mimeType = req.file.mimetype; // MIME type dari Multer
 
         // Upload ke Supabase Storage
-        const uploadResult = await uploadRecording(filePath, fileName);
+        const uploadResult = await uploadRecording(fileBuffer, fileName, mimeType);
 
         res.status(201).json({ success: true, message: 'File uploaded successfully', data: uploadResult });
     } catch (error) {
-        console.error('Error uploading file:', error.message); // Untuk debugging
-        res.status(500).json({ message: 'Error uploading file' }); // Pesan error
+        console.error('Error uploading file:', error.message);
+        res.status(500).json({ message: 'Error uploading file' });
     }
 });
 
