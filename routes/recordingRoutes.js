@@ -44,7 +44,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
         const fileExtension = path.extname(req.file.originalname); // Dapatkan ekstensi (misalnya: .mp3)
         const fileBaseName = path.basename(req.file.originalname, fileExtension); // Nama file tanpa ekstensi
-        const fileName = `${Date.now()}-${fileBaseName.replace(/\s+/g, '_')}`;
+        const fileName = `${Date.now()}-${fileBaseName.replace(/\s+/g, '_')}${fileExtension}`;
 
         const mimeType = req.file.mimetype; // MIME type dari Multer
 

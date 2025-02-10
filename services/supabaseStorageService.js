@@ -31,7 +31,7 @@ const getSignedUrl = async (fileName) => {
 const uploadRecording = async (fileBuffer, fileName, mimeType) => {
     const { data, error } = await supabase.storage
         .from('amjad-raka-skripsi-voip') // Nama bucket
-        .upload(`recordings/${fileName}.mp3`, fileBuffer, {
+        .upload(`recordings/${fileName}`, fileBuffer, {
             contentType: 'audio/mpeg', // Paksa MIME type menjadi MP3
             upsert: true
         });
