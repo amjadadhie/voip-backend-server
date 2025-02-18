@@ -1,7 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
-const recordingRoutes = require('./routes/recordingRoutes');
+const recordingRoutes = require('./routes/recordRoutes');
+const callRoutes = require("./routes/callRoutes");
+const channelRoutes = require("./routes/channelRoutes");
 
 dotenv.config(); // Load environment variables
 
@@ -13,6 +15,8 @@ app.use(express.json()); // To parse JSON requests
 // Import routes
 app.use('/api/auth', authRoutes); // Route untuk autentikasi
 app.use('/api/recordings', recordingRoutes); // Route untuk rekaman
+app.use("/calls", callRoutes);
+app.use("/channels", channelRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

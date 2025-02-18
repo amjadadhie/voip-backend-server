@@ -12,6 +12,8 @@
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.48.1",
+    "asterisk-ami-client": "^1.1.5",
+    "asterisk-manager": "^0.2.0",
     "aws-sdk": "^2.1692.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",

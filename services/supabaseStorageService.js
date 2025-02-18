@@ -1,4 +1,4 @@
-const supabase = require('../supabaseClient');
+const supabase = require('../config/supabase');
 
 // Mendapatkan daftar file dari Supabase Storage
 const listRecordings = async () => {

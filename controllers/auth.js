@@ -1,4 +1,4 @@
-const supabase = require('../supabaseClient'); // Mengimpor Supabase client
+const supabase = require('../config/supabase'); // Mengimpor Supabase client
 
 // Login User
 const loginUser = async (req, res) => {
