@@ -1,18 +1,40 @@
-const supabase = require("../config/supabase");
+const supabase = require('../config/supabaseClient'); // Import koneksi Supabase
 
-async function saveCallHistory(event) {
-    const record = {
-        caller: event.CallerIDNum || "Unknown",
-        callee: event.ConnectedLineNum || "Unknown",
-        duration: event.Duration || 0,
-        timestamp: new Date().toISOString(),
-        status: event.CauseTxt || "Unknown"
-    };
+// ✅ Simpan Call History saat call dimulai
+const saveCallHistory = async (caller_id, receiver_id) => {
+    const { data, error } = await supabase
+        .from('CallHistory')
+        .insert([
+            {
+                call_id: crypto.randomUUID(),
+                caller_id: caller_id,
+                receiver_id: receiver_id,
+                start_time: new Date().toISOString(),
+                end_time: null
+            }
+        ]);
 
-    const { error } = await supabase.from("call_history").insert([record]);
+    if (error) {
+        console.error('❌ Gagal menyimpan call history:', error);
+        return null;
+    }
+    console.log('✅ Call history tersimpan:', data);
+    return data;
+};
 
-    if (error) console.error("❌ Error inserting call history:", error);
-    else console.log("✅ Call history inserted:", record);
-}
+// ✅ Update `end_time` saat call selesai
+const updateCallEndTime = async (call_id) => {
+    const { data, error } = await supabase
+        .from('CallHistory')
+        .update({ end_time: new Date().toISOString() })
+        .eq('call_id', call_id);
 
-module.exports = saveCallHistory;
+    if (error) {
+        console.error('❌ Gagal update end_time:', error);
+        return null;
+    }
+    console.log('✅ Call end_time updated:', data);
+    return data;
+};
+
+module.exports = { saveCallHistory, updateCallEndTime };

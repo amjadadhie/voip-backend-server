@@ -1,4 +1,5 @@
-const supabase = require('../config/supabase'); // Mengimpor Supabase client
+const supabase = require('../config/supabaseClient'); // Mengimpor Supabase client
+const ami = require('../config/amiClient'); // Mengimpor Asterisk Manager client
 
 // Login User
 const loginUser = async (req, res) => {
@@ -31,6 +32,7 @@ const loginUser = async (req, res) => {
             return res.status(500).json({ success: false, message: 'Failed to update user status' });
         }
 
+        // 4️⃣ Ambil data user dari tabel `User`
         const { data: userData, error: userError } = await supabase
             .from('User')
             .select('user_id, email, device_ip, is_online')
@@ -41,6 +43,19 @@ const loginUser = async (req, res) => {
             console.error('User Data Error:', userError?.message || 'No user data found');
             return res.status(404).json({ success: false, message: 'User data not found in the database.' });
         }
+
+        // // Login ke Asterisk
+        // ami.action({
+        //     Action: 'Login',
+        //     Username: process.env.AST_USER,
+        //     Secret: process.env.AST_PASS
+        // }, (response) => {
+        //     if (response.Response !== 'Success') {
+        //     return res.status(500).json({ error: 'Failed to login to Asterisk' });
+        //     }
+
+        //     return res.json({ message: 'Login successful', user });
+        // });
 
         return res.status(200).json({ success: true, user: { ...userData, token: authData.session.access_token } });
     } catch (error) {
